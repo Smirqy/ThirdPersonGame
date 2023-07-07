@@ -75,11 +75,19 @@ public class ThirdPersonCameraMovement : MonoBehaviour
 
     private void CheckForObstructions()
     {
-        RaycastHit hit;
-        if (Physics.Linecast(target.position, transform.position, out hit, obstructionMask))
+        Vector3 direction = transform.position - target.position;
+        float distance = direction.magnitude;
+
+        RaycastHit[] hits = new RaycastHit[10];
+        int hitCount = Physics.RaycastNonAlloc(target.position, direction, hits, distance, obstructionMask);
+
+        for (int i = 0; i < hitCount; i++)
         {
-            Debug.Log("Hit");
-            transform.position = hit.point;
+            if (!hits[i].collider.isTrigger)
+            {
+                transform.position = hits[i].point;
+                break;
+            }
         }
     }
 }
